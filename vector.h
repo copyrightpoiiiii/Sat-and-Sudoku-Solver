@@ -29,6 +29,10 @@ public:
 
 	const myVector &erase (const unsigned long elem_id);
 
+    void random_shuffle(T& head,T& tail);
+
+    myVector &begin();
+
 	inline unsigned long size ();
 
 };

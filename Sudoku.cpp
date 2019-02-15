@@ -9,12 +9,12 @@ inline void Sudoku::random_shuffle (int *shuffle) {//生成一个9个数的随�
 	}
 }
 
-inline void Sudoku::swapRow (int x, int y) {
+inline void Sudoku::swap_row (int x, int y) {
 	for (int i = 0; i < 9; i++)
 		swap (mp[x][i], mp[y][i]);
 }
 
-inline void Sudoku::swapCol (int x, int y) {
+inline void Sudoku::swap_col (int x, int y) {
 	for (int i = 0; i < 9; i++)
 		swap (mp[i][x], mp[i][y]);
 }
@@ -26,11 +26,9 @@ inline void Sudoku::trans () {
 }
 
 inline bool Sudoku::check () {
-	int book[10];
 	//逐行检查
 	for (int row = 0; row < 9; row++) {
-		for (int i = 1; i <= 9; i++)
-			book[i] = 0;
+		clear_num_rec();
 		for (int col = 0; col < 9; col++)
 			book[mp[row][col]]++;
 		for (int i = 1; i <= 9; i++)
@@ -39,8 +37,7 @@ inline bool Sudoku::check () {
 	}
 	//逐列检查
 	for (int col = 0; col < 9; col++) {
-		for (int i = 1; i <= 9; i++)
-			book[i] = 0;
+		clear_num_rec();
 		for (int row = 0; row < 9; row++)
 			book[mp[row][col]]++;
 		for (int i = 1; i <= 9; i++)
@@ -50,8 +47,7 @@ inline bool Sudoku::check () {
 	//逐块检查
 	for (int st_row = 0; st_row < 9; st_row += 3)
 		for (int st_col = 0; st_col < 9; st_col += 3) {
-			for (int i = 1; i <= 9; i++)
-				book[i] = 0;
+			clear_num_rec();
 			for (int row = st_row; row < 3 + st_row; row++)
 				for (int col = st_col; col < 3 + st_col; col++)
 					book[mp[row][col]]++;
@@ -68,7 +64,12 @@ inline void Sudoku::clear () {//清空操作
 			mp[i][j] = 0;
 }
 
-status Sudoku::initSudokuMap (int hint_num) {//初始化数独地图
+inline void Sudoku::clear_num_rec () {//清空book数组
+	for (int i = 1; i <= 9; i++)
+		book[i]=0;
+}
+
+status Sudoku::init_SudokuMap (int hint_num) {//初始化数独地图
 	int shuffle[9];
 	random_shuffle (shuffle);
 	int row = 3, column = 3;
@@ -117,13 +118,13 @@ status Sudoku::initSudokuMap (int hint_num) {//初始化数独地图
 			case 0: {//行交换
 				row = rand () % 3;//选择是三行中的哪一行进行交换
 				int x = rand () % 3, y = ((rand () % 2 + 1) + x) % 3;//选择其中两个
-				swapRow (x, y);
+				swap_row (x, y);
 				break;
 			}
 			case 1: {//列交换
 				column = rand () % 3;//选择是三列中的哪一列进行交换
 				int x = rand () % 3, y = ((rand () % 2 + 1) + x) % 3;//选择其中两个
-				swapCol (x, y);
+				swap_col (x, y);
 				break;
 			}
 			case 2://转置
@@ -135,7 +136,7 @@ status Sudoku::initSudokuMap (int hint_num) {//初始化数独地图
 	if (!check ()) {
 		clear ();
 		return ERROR;
-	} else {
+	} else {//挖空
 		int blank_num = 81 - max (17, hint_num);
 		note_size = hint_num;
 		while (blank_num--) {
@@ -154,12 +155,9 @@ inline unsigned long Sudoku::hint_num () {
 	return note_size;
 }
 
-Cnf Sudoku::transform () {
-    myVector<int> rec[9][9];
-    int book[10];
+inline void Sudoku::enum_row(){
     for(int row=0;row<9;row++){//枚举每一行
-        for(int i=1;i<=9;i++)
-            book[i]=0;
+        clear_num_rec();
         for(int col=0;col<9;col++)
             if(mp[row][col])
                 rec[row][col].push_back(mp[row][col]),book[mp[row][col]]=1;
@@ -170,9 +168,11 @@ Cnf Sudoku::transform () {
                         rec[row][col].push_back(i);
             }
     }
+}
+
+inline void Sudoku::enum_col(){
     for(int col=0;col<9;col++){//枚举每一列，做减法
-        for(int i=1;i<=9;i++)
-            book[i]=0;
+        clear_num_rec();
         for(int row=0;row<9;row++)
             if(mp[row][col])
                 book[mp[row][col]]=1;
@@ -183,11 +183,56 @@ Cnf Sudoku::transform () {
                     if(book[i]){
                         while(now<rec[row][col].size()&&rec[row][col][now]<i)
                             now++;
-                        if(now==rec[row][col].size())
+                        if(now>=rec[row][col].size())
                             break;
                         if(rec[row][col][now]==i)
                             rec[row][col].erase(now);
                     }
             }
     }
+}
+
+inline void Sudoku::enum_grid(){
+    for (int st_row = 0; st_row < 9; st_row += 3)//枚举每个小方格，做减法
+		for (int st_col = 0; st_col < 9; st_col += 3) {
+			clear_num_rec();
+			for (int row = st_row; row < 3 + st_row; row++)
+				for (int col = st_col; col < 3 + st_col; col++)
+                    if(mp[row][col])
+					    book[mp[row][col]]++;
+			for (int row = st_row; row < 3 + st_row; row++)
+				for (int col = st_col; col < 3 + st_col; col++)
+                    if(!mp[row][col]){
+                        int now=0;
+                        for(int i=1;i<=9;i++)
+                            if(book[i]){
+                                while(now<rec[row][col].size()&&rec[row][col][now]<i)
+                                    now++;
+                                if(now>=rec[row][col].size())
+                                    break;
+                                if(rec[row][col][now]==i)
+                                    rec[row][col].erase(now);
+                            }
+                    }
+		}
+}
+
+inline void Sudoku::naked_single(){
+    for(int row=0;row<9;row++)
+        for(int col=0;col<9;col++)
+            if(mp[row][col]||(rec[row][col].size()==1))
+
+}
+
+inline void Sudoku::hidden_single();
+
+inline void Sudoku::intersection_removal();
+
+
+void Sudoku::transform () {
+    enum_row();
+    enum_col();
+    enum_grid();
+    
+    
 }

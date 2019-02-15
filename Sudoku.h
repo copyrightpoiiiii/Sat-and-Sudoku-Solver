@@ -11,18 +11,39 @@
 typedef int status;			//状态返回值
 class Sudoku{
     private:
+        myVector<int> rec[9][9];
+        
+        int book[10];
+
         int note_size;//提示数个数
 
         inline void random_shuffle(int* shuffle);
         
-        inline void swapRow(int x,int y);
+        inline void swap_row(int x,int y);
 
-        inline void swapCol(int x,int y);
+        inline void swap_col(int x,int y);
 
         inline void trans();
-        
+
+        inline void enum_row();
+
+        inline void enum_col();
+
+        inline void enum_grid();
+
+        inline void clear_num_rec();
+
+        inline void naked_single();
+
+        inline void hidden_single();
+
+        inline void intersection_removal();
+
     public:
         int mp[9][9];//9*9的数独局面
+
+        Cnf Sudoku_trans;
+        
         inline Sudoku(){
             memset(mp,0,sizeof(mp));
             note_size=20;
@@ -32,10 +53,10 @@ class Sudoku{
 
         inline void clear();
 
-        status initSudokuMap(int hint_num);
+        status init_SudokuMap(int hint_num);
 
         inline unsigned long hint_num();
 
-        Cnf transform();
+        void transform();
 
 };

@@ -41,6 +41,19 @@ const myVector <T> &myVector<T>::erase (const unsigned long elem_id) {
 }
 
 template<class T>
+void myVector<T>::random_shuffle(T& head,T& tail){
+    int len=tail-head;
+    for(int i=0;i<len;i++){
+        swap(head+i,head+rand()%len);
+    }
+}
+
+template<class T>
+myVector <T> &myVector<T>::begin () {
+	return elem;
+}
+
+template<class T>
 inline unsigned long myVector<T>::size () {
 	return num;
 }
