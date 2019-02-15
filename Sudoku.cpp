@@ -1,0 +1,193 @@
+#include"Sudoku.h"
+
+inline void Sudoku::random_shuffle (int *shuffle) {//生成一个9个数的随机乱排
+	for (int i = 0; i < 9; i++)
+		shuffle[i] = i + 1;
+	for (int i = 0; i < 9; i++) {
+		int j = rand () % 9;
+		swap (shuffle[i], shuffle[j]);
+	}
+}
+
+inline void Sudoku::swapRow (int x, int y) {
+	for (int i = 0; i < 9; i++)
+		swap (mp[x][i], mp[y][i]);
+}
+
+inline void Sudoku::swapCol (int x, int y) {
+	for (int i = 0; i < 9; i++)
+		swap (mp[i][x], mp[i][y]);
+}
+
+inline void Sudoku::trans () {
+	for (int i = 0; i < 9; i++)
+		for (int j = i; j < 9; j++)
+			swap (mp[i][j], mp[j][i]);
+}
+
+inline bool Sudoku::check () {
+	int book[10];
+	//逐行检查
+	for (int row = 0; row < 9; row++) {
+		for (int i = 1; i <= 9; i++)
+			book[i] = 0;
+		for (int col = 0; col < 9; col++)
+			book[mp[row][col]]++;
+		for (int i = 1; i <= 9; i++)
+			if (book[i] != 1)
+				return false;
+	}
+	//逐列检查
+	for (int col = 0; col < 9; col++) {
+		for (int i = 1; i <= 9; i++)
+			book[i] = 0;
+		for (int row = 0; row < 9; row++)
+			book[mp[row][col]]++;
+		for (int i = 1; i <= 9; i++)
+			if (book[i] != 1)
+				return false;
+	}
+	//逐块检查
+	for (int st_row = 0; st_row < 9; st_row += 3)
+		for (int st_col = 0; st_col < 9; st_col += 3) {
+			for (int i = 1; i <= 9; i++)
+				book[i] = 0;
+			for (int row = st_row; row < 3 + st_row; row++)
+				for (int col = st_col; col < 3 + st_col; col++)
+					book[mp[row][col]]++;
+			for (int i = 1; i <= 9; i++)
+				if (book[i] != 1)
+					return false;
+		}
+	return true;
+}
+
+inline void Sudoku::clear () {//清空操作
+	for (int i = 0; i < 9; i++)
+		for (int j = 0; j < 9; j++)
+			mp[i][j] = 0;
+}
+
+status Sudoku::initSudokuMap (int hint_num) {//初始化数独地图
+	int shuffle[9];
+	random_shuffle (shuffle);
+	int row = 3, column = 3;
+	//先填最中间的方格
+	for (int i = 0; i < 9; i++) {
+		mp[row][column] = shuffle[i];
+		column++;
+		if (column % 3 == 0) {
+			row++;
+			column = 3;
+		}
+	}
+	//处理方格左右的小方格
+	row = 3;
+	column = 0;
+	for (int i = 3; row < 6; i = (i + 1) % 9) {
+		mp[row][column] = shuffle[i];
+		column++;
+		if (column % 3 == 0) {
+			row++;
+			column = 0;
+		}
+	}
+	row = 3;
+	column = 6;
+	for (int i = 6; row < 6; i = (i + 1) % 9) {
+		mp[row][column] = shuffle[i];
+		column++;
+		if (column % 3 == 0) {
+			row++;
+			column = 6;
+		}
+	}
+	//将三个方格的情况推广到其它两列
+	for (int i = 0; i < 9; i++)
+		for (int j = 0; j < 3; j++)
+			mp[j][i] = mp[j + 3][(i + 1) % 9];
+	for (int i = 0; i < 9; i++)
+		for (int j = 6; j < 9; j++)
+			mp[j][i] = mp[j - 3][(i + 2) % 9];
+	//为了增加随机性，再进行多次行列变化以及转置操作
+	int opt_num = 100;
+	while (opt_num--) {
+		int opt_size = rand () % 3;
+		switch (opt_size) {
+			case 0: {//行交换
+				row = rand () % 3;//选择是三行中的哪一行进行交换
+				int x = rand () % 3, y = ((rand () % 2 + 1) + x) % 3;//选择其中两个
+				swapRow (x, y);
+				break;
+			}
+			case 1: {//列交换
+				column = rand () % 3;//选择是三列中的哪一列进行交换
+				int x = rand () % 3, y = ((rand () % 2 + 1) + x) % 3;//选择其中两个
+				swapCol (x, y);
+				break;
+			}
+			case 2://转置
+				trans ();
+				break;
+		}
+	}
+	//检测数独是否合法
+	if (!check ()) {
+		clear ();
+		return ERROR;
+	} else {
+		int blank_num = 81 - max (17, hint_num);
+		note_size = hint_num;
+		while (blank_num--) {
+			int row = rand () % 9, col = rand () % 9;
+			while (!mp[row][col]) {
+				row = rand () % 9;
+				col = rand () % 9;
+			}
+			mp[row][col] = 0;
+		}
+		return OK;
+	}
+}
+
+inline unsigned long Sudoku::hint_num () {
+	return note_size;
+}
+
+Cnf Sudoku::transform () {
+    myVector<int> rec[9][9];
+    int book[10];
+    for(int row=0;row<9;row++){//枚举每一行
+        for(int i=1;i<=9;i++)
+            book[i]=0;
+        for(int col=0;col<9;col++)
+            if(mp[row][col])
+                rec[row][col].push_back(mp[row][col]),book[mp[row][col]]=1;
+        for(int col=0;col<9;col++)
+            if(!mp[row][col]){
+                for(int i=1;i<=9;i++)
+                    if(!book[i])
+                        rec[row][col].push_back(i);
+            }
+    }
+    for(int col=0;col<9;col++){//枚举每一列，做减法
+        for(int i=1;i<=9;i++)
+            book[i]=0;
+        for(int row=0;row<9;row++)
+            if(mp[row][col])
+                book[mp[row][col]]=1;
+        for(int row=0;row<9;row++)
+            if(!mp[row][col]){
+                int now=0;
+                for(int i=1;i<=9;i++)
+                    if(book[i]){
+                        while(now<rec[row][col].size()&&rec[row][col][now]<i)
+                            now++;
+                        if(now==rec[row][col].size())
+                            break;
+                        if(rec[row][col][now]==i)
+                            rec[row][col].erase(now);
+                    }
+            }
+    }
+}
