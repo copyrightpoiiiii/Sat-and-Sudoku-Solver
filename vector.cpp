@@ -50,6 +50,14 @@ void myVector<T>::random_shuffle(T& head,T& tail){
 
 template<class T>
 myVector <T> &myVector<T>::begin () {
+	num = 0;
+	Listsize = 8;
+	if(elem!=NULL)free(elem);
+    elem = (T *) malloc (Listsize * sizeof (T));
+}
+
+template<class T>
+void myVector<T>::clear () {
 	return elem;
 }
 

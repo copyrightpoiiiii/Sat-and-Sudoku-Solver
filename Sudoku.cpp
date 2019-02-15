@@ -220,8 +220,14 @@ inline void Sudoku::enum_grid(){
 inline void Sudoku::naked_single(){
     for(int row=0;row<9;row++)
         for(int col=0;col<9;col++)
-            if(mp[row][col]||(rec[row][col].size()==1))
-
+            if(mp[row][col]||(rec[row][col].size()==1)){
+                myVector<int> clause;
+                clause.clear();
+                int var_id=mp[row][col]==0?rec[row][col][0]:mp[row][col];
+                clause.push_back(binary_conversion(row,col,var_id));
+                Sudoku_trans.cnf_set.push_back(clause);
+                Sudoku_trans.literal_size++;
+            }
 }
 
 inline void Sudoku::hidden_single();

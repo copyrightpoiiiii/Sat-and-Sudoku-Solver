@@ -31,6 +31,8 @@ public:
 
     void random_shuffle(T& head,T& tail);
 
+    void clear();
+
     myVector &begin();
 
 	inline unsigned long size ();
