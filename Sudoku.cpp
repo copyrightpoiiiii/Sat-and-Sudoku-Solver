@@ -217,22 +217,108 @@ inline void Sudoku::enum_grid(){
 		}
 }
 
+inline void Sudoku::clear_other_num(int row,int col,int num){
+    for(int tmp_col=0;tmp_col<9;tmp_col++)
+        if(rec[row][tmp_col].size()!=0){
+            for(int i=0;i<rec[row][tmp_col].size();i++)
+                if(rec[row][tmp_col][i]==num){
+                    rec[row][tmp_col].erase(i);
+                    break;
+                }
+        }
+    for(int tmp_row=0;tmp_row<9;tmp_row++)
+        if(rec[tmp_row][col].size()!=0){
+            for(int i=0;i<rec[tmp_row][col].size();i++)
+                if(rec[tmp_row][col][i]==num){
+                    rec[tmp_row][col].erase(i);
+                    break;
+                }
+        }
+    int st_row=3*(row/3),st_col=3*(col/3);
+    for(int tmp_row=st_row;tmp_row<st_row+3;tmp_row++)
+        for(int tmp_col=st_col;tmp_col<st_col+3;tmp_col++)
+            if(rec[tmp_row][tmp_col].size()!=0){
+                for(int i=0;i<rec[tmp_row][tmp_col].size();i++)
+                    if(rec[tmp_row][tmp_col][i]==num){
+                        rec[tmp_row][tmp_col].erase(i);
+                        break;
+                    }
+            }
+}
+
 inline void Sudoku::naked_single(){
     for(int row=0;row<9;row++)
         for(int col=0;col<9;col++)
             if(mp[row][col]||(rec[row][col].size()==1)){
                 myVector<int> clause;
                 clause.clear();
-                int var_id=mp[row][col]==0?rec[row][col][0]:mp[row][col];
-                clause.push_back(binary_conversion(row,col,var_id));
+                int var_val=mp[row][col]==0?rec[row][col][0]:mp[row][col];
+                clear_other_num(row,col,var_val);
+                clause.push_back(binary_conversion(row,col,var_val));
                 Sudoku_trans.cnf_set.push_back(clause);
                 Sudoku_trans.literal_size++;
             }
 }
 
-inline void Sudoku::hidden_single();
+inline void Sudoku::find_single_number(int* que,int& r){
+    int pos[10];
+    for(int row=0;row<9;row++){//枚举行
+        clear_num_rec();
+        for(int col=0;col<9;col++)
+            if(rec[row][col].size()!=0)
+                for(int i=0;i<rec[row][col].size();i++)
+                    book[rec[row][col][i]]++,pos[rec[row][col][i]]=binary_conversion(row,col,i);
+        for(int i=1;i<=9;i++)
+            if(book[i]==1)
+                que[++r]=pos[i];
+    }
+    for(int col=0;col<9;col++){//枚举列
+        clear_num_rec();
+        for(int row=0;row<9;row++)
+            if(rec[row][col].size()!=0)
+                for(int i=0;i<rec[row][col].size();i++)
+                    book[rec[row][col][i]]++,pos[rec[row][col][i]]=binary_conversion(row,col,i);
+        for(int i=1;i<=9;i++)
+            if(book[i]==1)
+                que[++r]=pos[i];
+    }
+    for (int st_row = 0; st_row < 9; st_row += 3)//枚举每个小方格
+		for (int st_col = 0; st_col < 9; st_col += 3) {
+			clear_num_rec();
+			for (int row = st_row; row < 3 + st_row; row++)
+				for (int col = st_col; col < 3 + st_col; col++)
+                    if(rec[row][col].size()!=0)
+                        for(int i=0;i<rec[row][col].size();i++)
+                            book[rec[row][col][i]]++,pos[rec[row][col][i]]=binary_conversion(row,col,i);
+			for(int i=1;i<=9;i++)
+                if(book[i]==1)
+                    que[++r]=pos[i];
+		}
+}
 
-inline void Sudoku::intersection_removal();
+inline void Sudoku::update(int row,int col,int num,int* que,int& r){
+    clear_num_rec();
+}
+
+inline void Sudoku::hidden_single(){
+    clear_num_rec();
+    int que[100],l=0,r=0;
+    find_single_number(que,r);
+    while(l!=r){
+        int xyz=que[++l];
+        int val=xyz%9,col=(xyz/9)%9,row=(xyz/9)/9;
+        myVector<int> clause;
+        clause.clear();
+        clause.push_back(xyz);
+        Sudoku_trans.cnf_set.push_back(clause);
+        Sudoku_trans.literal_size++;
+        update(row,col,val);
+    }
+}
+
+inline void Sudoku::intersection_removal(){
+
+}
 
 
 void Sudoku::transform () {

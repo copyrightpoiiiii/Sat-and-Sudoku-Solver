@@ -3,6 +3,7 @@
 #include"General.h"
 #endif
 #include"Cnf.h"
+#define binary_conversion(x,y,z) ((x*9*9)+(y*9)+z)
 
 #define OK 1
 #define ERROR 0
@@ -38,6 +39,12 @@ class Sudoku{
         inline void hidden_single();
 
         inline void intersection_removal();
+
+        inline void clear_other_num(int row,int col,int num);
+
+        inline void find_single_number(int* que,int& r);
+
+        inline void update(int row,int col,int num,int* que,int& r);
 
     public:
         int mp[9][9];//9*9的数独局面
