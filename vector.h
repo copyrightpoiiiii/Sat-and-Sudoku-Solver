@@ -14,7 +14,7 @@ private:
     inline void inc_capacity ();
 
 	inline void dec_capacity ();
-    
+
 public:
 	inline myVector () {
 		num = 0;
@@ -29,6 +29,8 @@ public:
 	const myVector &pop_back ();
 
 	const myVector &erase (const unsigned long elem_id);
+
+    bool del (const T val);
 
     void random_shuffle(T& head,T& tail);
 

@@ -41,6 +41,22 @@ const myVector <T> &myVector<T>::erase (const unsigned long elem_id) {
 }
 
 template<class T>
+bool myVector<T>::del (const T val) {
+    int l=0,r=num-1;
+    while(l<=r){
+        int mid=(l+r)>>1;
+        if(elem[mid]==val){
+            erase(mid);
+            return true;
+        }
+        else if(elem[mid]<val)
+            l=mid+1;
+        else r=mid-1;
+    }
+	return false;
+}
+
+template<class T>
 void myVector<T>::random_shuffle(T& head,T& tail){
     int len=tail-head;
     for(int i=0;i<len;i++){
