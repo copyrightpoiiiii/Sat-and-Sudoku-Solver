@@ -278,14 +278,14 @@ inline void Sudoku::find_single_number(int* que,int& r){
 		}
 }
 
-inline void Sudoku::update(int row,int col,int num,int* que,int& r){
+/*inline void Sudoku::update(int row,int col,int num,int* que,int& r){
     clear_num_rec();
     for(int tmp_row=0;tmp_row<9;tmp_row++){
         rec[tmp_row][col].del(num);
         if(rec[tmp_row][col].size()==1)
     }
                 
-}
+}*/
 
 inline void Sudoku::hidden_single(){
     clear_num_rec();
@@ -299,7 +299,7 @@ inline void Sudoku::hidden_single(){
         clause.push_back(xyz);
         Sudoku_trans.cnf_set.push_back(clause);
         Sudoku_trans.literal_size++;
-        update(row,col,val,que,r);
+        //update(row,col,val,que,r);
     }
 }
 
@@ -312,6 +312,106 @@ void Sudoku::transform () {
     enum_row();
     enum_col();
     enum_grid();
-    
-    
+    for(int row=0;row<9;row++)
+        for(int col=0;col<9;col++)
+            if(mp[row][col]){
+                myVector<int> clause;
+                clause.clear();
+                clause.push_back(binary_conversion(row,col,mp[row][col]));
+                Sudoku_trans.cnf_set.push_back(clause);
+            }
+            else{
+                myVector<int> clause;
+                clause.clear();
+                for(int i=0;i<rec[row][col].size();i++){
+                    clause.push_back(binary_conversion(row,col,rec[row][col][i]));
+                    for(int j=i+1;j<rec[row][col].size();j++){
+                        myVector<int> clause_lit;
+                        clause_lit.clear();
+                        clause_lit.push_back(-binary_conversion(row,col,rec[row][col][i]));
+                        clause_lit.push_back(-binary_conversion(row,col,rec[row][col][j]));
+                        Sudoku_trans.cnf_set.push_back(clause_lit);
+                    }
+                }
+                Sudoku_trans.cnf_set.push_back(clause);
+            }
+    for(int row=0;row<9;row++)
+        for(int num=1;num<=9;num++)
+            for(int col=0;col<9;col++)
+                for(int col_eum=col+1;col_eum<9;col_eum++){
+                    myVector<int> clause;
+                    clause.clear();
+                    clause.push_back(-binary_conversion(row,col,num));
+                    clause.push_back(-binary_conversion(row,col_eum,num));
+                    Sudoku_trans.cnf_set.push_back(clause);
+                }
+    for(int col=0;col<9;col++)
+        for(int num=1;num<=9;num++)
+            for(int row=0;row<9;row++)
+                for(int row_eum=row+1;row_eum<9;row_eum++){
+                    myVector<int> clause;
+                    clause.clear();
+                    clause.push_back(-binary_conversion(row,col,num));
+                    clause.push_back(-binary_conversion(row_eum,col,num));
+                    Sudoku_trans.cnf_set.push_back(clause);
+                }
+    for(int num=1;num<=9;num++)
+        for (int st_row = 0; st_row < 9; st_row += 3)//枚举每个小方格
+            for (int st_col = 0; st_col < 9; st_col += 3)
+                for (int row = st_row; row < 3 + st_row; row++)
+                    for (int col = st_col; col < 3 + st_col; col++){
+                        int row_eum=row,col_eum=col+1;
+                        if(col_eum>=st_col+3){
+                            row_eum++;
+                            col_eum=st_col;
+                        }
+                        while(row_eum<3+st_row){
+                            myVector<int> clause;
+                            clause.clear();
+                            clause.push_back(-binary_conversion(row,col,num));
+                            clause.push_back(-binary_conversion(row_eum,col_eum,num));
+                            Sudoku_trans.cnf_set.push_back(clause);
+                            col_eum++;
+                            if(col_eum>=st_col+3){
+                                row_eum++;
+                                col_eum=st_col;
+                            }
+                        }
+                    }
+    for(int row=0;row<9;row++)
+        for(int num=1;num<=9;num++){
+            myVector<int> clause;
+            clause.clear();
+            for(int col=0;col<9;col++)
+                clause.push_back(binary_conversion(row,col,num));
+            Sudoku_trans.cnf_set.push_back(clause);
+        }
+    for(int col=0;col<9;col++)
+        for(int num=1;num<=9;num++){
+            myVector<int> clause;
+            clause.clear();
+            for(int row=0;row<9;row++)
+                clause.push_back(binary_conversion(row,col,num));
+            Sudoku_trans.cnf_set.push_back(clause);
+        }
+    for(int num=1;num<=9;num++)
+        for (int st_row = 0; st_row < 9; st_row += 3)//枚举每个小方格
+            for (int st_col = 0; st_col < 9; st_col += 3){
+                myVector<int> clause;
+                clause.clear();
+                for (int row = st_row; row < 3 + st_row; row++)
+                    for (int col = st_col; col < 3 + st_col; col++)
+                        clause.push_back(binary_conversion(row,col,num));
+                Sudoku_trans.cnf_set.push_back(clause);
+            }
+    int book_var[1000];
+    memset(book_var,0,sizeof(book_var));
+    for(int i=0;i<Sudoku_trans.cnf_set.size();i++){
+        for(int j=0;j<Sudoku_trans.cnf_set[i].size();j++)
+            book_var[Sudoku_trans.cnf_set[i][j]]++;
+        Sudoku_trans.cnf_set[i].push_back(0);
+    }
+    for(int i=1;i<1000;i++)
+        if(book_var[i])
+            Sudoku_trans.literal_size++;
 }
