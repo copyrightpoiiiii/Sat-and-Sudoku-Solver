@@ -1,5 +1,5 @@
 
-#include"vector.h"
+#include"vector.hpp"
 
 class Cnf{
     private:

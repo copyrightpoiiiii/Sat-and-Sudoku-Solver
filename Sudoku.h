@@ -44,7 +44,7 @@ class Sudoku{
 
         inline void find_single_number(int* que,int& r);
 
-        inline void update(int row,int col,int num,int* que,int& r);
+        //inline void update(int row,int col,int num,int* que,int& r);
 
     public:
         int mp[9][9];//9*9的数独局面
