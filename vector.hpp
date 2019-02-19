@@ -23,13 +23,16 @@ private:
 	}
 
 public:
+    int l1,l2;
 	inline myVector () {
 		num = 0;
 		Listsize = 8;
 		elem = (T *) malloc (Listsize * sizeof (T));
 	}
 
-	inline T &operator[] (const unsigned long x);
+	inline T &operator[] (const unsigned long x){
+        return elem[x];
+    }
 
 	const myVector &push_back (const T new_elem) {
 		if (num == Listsize)
@@ -89,5 +92,10 @@ public:
 	inline unsigned long size () {
 		return num;
 	}
+
+    inline void capacity(int input_size){
+        Listsize=max(Listsize,input_size);
+        elem=(T*)realloc(Listsize*sizeof(T));
+    }
 
 };

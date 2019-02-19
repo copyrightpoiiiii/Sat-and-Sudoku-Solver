@@ -1,12 +1,5 @@
 #include "SAT.h"
 
-int readint(){
-    int x=0,f=1;char ch=getchar();
-    while(ch<'0'||ch>'9'){if(ch=='-')f=-1;ch=getchar();}
-    while(ch>='0'&&ch<='9'){x=10*x+ch-'0';ch=getchar();}
-    return x*f;
-}
-
 int main()
 {
     int op = 1;
@@ -41,4 +34,24 @@ int main()
     } //end of while
     printf("即将退出系统！\n");
     return 0;
+}
+
+bool solve(){
+
+}
+
+void init(){
+    int n=readint(),m=readint();
+    clauses.literal_size=n;
+    while(m--){
+        myVector<int> new_clause;
+        new_clause.clear();
+        int x=readint();
+        while(x){
+            new_clause.push_back(x);
+            x=readint();
+        }
+        clauses.cnf_set.push_back(new_clause);
+    }   
+    clauses.init_lit_set();
 }

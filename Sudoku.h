@@ -2,7 +2,7 @@
 #define GENERAL
 #include"General.h"
 #endif
-#include"Cnf.h"
+#include"Cnf.hpp"
 #define binary_conversion(x,y,z) ((x*9*9)+(y*9)+z)
 
 #define OK 1
