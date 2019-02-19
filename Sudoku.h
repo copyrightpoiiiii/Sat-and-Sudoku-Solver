@@ -1,69 +1,73 @@
 #ifndef GENERAL
 #define GENERAL
+
 #include"General.hpp"
+
 #endif
+
 #include"Cnf.hpp"
-#define binary_conversion(x,y,z) ((x*9*9)+(y*9)+z)
+
+#define binary_conversion(x, y, z) ((x*9*9)+(y*9)+z)
 
 #define OK 1
 #define ERROR 0
 #define INFEASTABLE -1
 #define OVERFLOW -2
-typedef int status;			//状态返回值
-class Sudoku{
-    private:
-        myVector<int> rec[9][9];
-        
-        int book[10];
+typedef int status;            //状态返回值
+class Sudoku {
+private:
+	myVector<int> rec[9][9];
 
-        int note_size;//提示数个数
+	int book[10];
 
-        inline void random_shuffle(int* shuffle);
-        
-        inline void swap_row(int x,int y);
+	int note_size;//提示数个数
 
-        inline void swap_col(int x,int y);
+	inline void random_shuffle (int *shuffle);
 
-        inline void trans();
+	inline void swap_row (int x, int y);
 
-        inline void enum_row();
+	inline void swap_col (int x, int y);
 
-        inline void enum_col();
+	inline void trans ();
 
-        inline void enum_grid();
+	inline void enum_row ();
 
-        inline void clear_num_rec();
+	inline void enum_col ();
 
-        inline void naked_single();
+	inline void enum_grid ();
 
-        inline void hidden_single();
+	inline void clear_num_rec ();
 
-        inline void intersection_removal();
+	inline void naked_single ();
 
-        inline void clear_other_num(int row,int col,int num);
+	inline void hidden_single ();
 
-        inline void find_single_number(int* que,int& r);
+	inline void intersection_removal ();
 
-        //inline void update(int row,int col,int num,int* que,int& r);
+	inline void clear_other_num (int row, int col, int num);
 
-    public: 
-        int mp[9][9];//9*9的数独局面
+	inline void find_single_number (int *que, int &r);
 
-        Cnf Sudoku_trans;
-        
-        inline Sudoku(){
-            memset(mp,0,sizeof(mp));
-            note_size=20;
-        }
+	//inline void update(int row,int col,int num,int* que,int& r);
 
-        inline bool check();
+public:
+	int mp[9][9];//9*9的数独局面
 
-        inline void clear();
+	Cnf Sudoku_trans;
 
-        status init_SudokuMap(int hint_num);
+	inline Sudoku () {
+		memset (mp, 0, sizeof (mp));
+		note_size = 20;
+	}
 
-        inline unsigned long hint_num();
+	inline bool check ();
 
-        void transform();
+	inline void clear ();
+
+	status init_SudokuMap (int hint_num);
+
+	inline unsigned long hint_num ();
+
+	void transform ();
 
 };

@@ -37,7 +37,9 @@ int main()
 }
 
 bool solve(){
-
+    for(int i=0;i<clauses.cnf_set.size();i++)
+        q.push(make_pair((int)clauses.cnf_set[i].size(),i));
+    while()
 }
 
 void init(){

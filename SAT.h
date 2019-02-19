@@ -2,12 +2,15 @@
 #include"vector.hpp"
 #include"set.hpp"
 #include"queue.hpp"
+#include"heap.hpp"
 #ifndef GENERAL
 #define GENERAL
 #include"General.hpp"
 #endif
 
 Cnf clauses;
+priority_queue<pair<int,int> > q;
+
 
 
 int readint(){
