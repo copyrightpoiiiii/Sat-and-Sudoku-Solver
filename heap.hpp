@@ -1,7 +1,7 @@
 #ifndef GENERAL
 #define GENERAL
 
-#include"General.h"
+#include"General.hpp"
 
 #endif
 #include"vector.hpp"
@@ -56,6 +56,9 @@ public:
       } else
         break;
     }
+  }
+  bool empty(){
+      return length==0;
   }
   ~priority_queue() {
     data.clear();

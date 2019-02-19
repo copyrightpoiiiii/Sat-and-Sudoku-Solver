@@ -1,7 +1,7 @@
 #ifndef GENERAL
 #define GENERAL
 
-#include"General.h"
+#include"General.hpp"
 
 #endif
 
@@ -22,9 +22,8 @@ void selectionSort(T* array, int size)
 }
 
 template <class T>
-void sort(T* array, T* end)
+void sort(T* array, int size)
 {
-    int size=end-array;
     if (size <= 15)
         selectionSort(array, size);
 
@@ -42,7 +41,7 @@ void sort(T* array, T* end)
             swap(array[i],array[j]);
         }
 
-        sort(array    , array+i);
-        sort(&array[i], (&array[i])+(size-i));
+        sort(array    , i);
+        sort(array+i, (size-i));
     }
 }

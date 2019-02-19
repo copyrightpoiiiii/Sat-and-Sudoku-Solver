@@ -5,6 +5,8 @@
 
 #endif
 
+#include"sort.hpp"
+
 template<typename T>
 class myVector {
 private:
@@ -95,6 +97,10 @@ public:
     inline void capacity(int input_size){
         Listsize=max(Listsize,input_size);
         elem=(T*)realloc(Listsize*sizeof(T));
+    }
+
+    void qsort(int l,int r){
+        sort(elem+l,r-l+1);
     }
 
 };

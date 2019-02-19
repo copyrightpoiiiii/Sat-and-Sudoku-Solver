@@ -3,6 +3,7 @@
 #include"set.hpp"
 #include"queue.hpp"
 #include"heap.hpp"
+#include"sort.hpp"
 #ifndef GENERAL
 #define GENERAL
 #include"General.hpp"

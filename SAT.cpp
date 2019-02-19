@@ -39,7 +39,10 @@ int main()
 bool solve(){
     for(int i=0;i<clauses.cnf_set.size();i++)
         q.push(make_pair((int)clauses.cnf_set[i].size(),i));
-    while()
+    while(!q.empty()){
+        for(pair<int,int>i=q.top();clauses.clause_info[i.first].size!=i.second;q.pop());
+        pair<int,int> cho_cla=q.top();q.pop();
+    }
 }
 
 void init(){
@@ -53,6 +56,7 @@ void init(){
             new_clause.push_back(x);
             x=readint();
         }
+        new_clause.qsort(0,new_clause.size());
         clauses.cnf_set.push_back(new_clause);
     }   
     clauses.init();
