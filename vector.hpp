@@ -23,7 +23,6 @@ private:
 	}
 
 public:
-    int l1,l2;
 	inline myVector () {
 		num = 0;
 		Listsize = 8;

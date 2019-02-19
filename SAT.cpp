@@ -53,5 +53,5 @@ void init(){
         }
         clauses.cnf_set.push_back(new_clause);
     }   
-    clauses.init_lit_set();
+    clauses.init();
 }
