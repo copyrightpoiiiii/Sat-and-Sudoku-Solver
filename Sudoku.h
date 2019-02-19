@@ -1,6 +1,6 @@
 #ifndef GENERAL
 #define GENERAL
-#include"General.h"
+#include"General.hpp"
 #endif
 #include"Cnf.hpp"
 #define binary_conversion(x,y,z) ((x*9*9)+(y*9)+z)
@@ -46,7 +46,7 @@ class Sudoku{
 
         //inline void update(int row,int col,int num,int* que,int& r);
 
-    public:
+    public: 
         int mp[9][9];//9*9的数独局面
 
         Cnf Sudoku_trans;

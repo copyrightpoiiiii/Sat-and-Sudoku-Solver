@@ -1,7 +1,7 @@
 #ifndef GENERAL
 #define GENERAL
 
-#include"General.h"
+#include"General.hpp"
 
 #endif
 

@@ -1,11 +1,11 @@
-#ifndef GENERAL
-#define GENERAL
-#include"General.h"
-#endif
 #include"Sudoku.h"
 #include"vector.hpp"
 #include"set.hpp"
 #include"queue.hpp"
+#ifndef GENERAL
+#define GENERAL
+#include"General.hpp"
+#endif
 
 Cnf clauses;
 
