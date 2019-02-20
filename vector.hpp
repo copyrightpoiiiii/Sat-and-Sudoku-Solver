@@ -62,10 +62,10 @@ public:
 		int l = 0, r = num - 1;
 		while (l <= r) {
 			int mid = (l + r) >> 1;
-			if (elem[mid] == val) {
+			if (abs(elem[mid]) == val) {
 				erase (mid);
 				return true;
-			} else if (elem[mid] < val)
+			} else if (abs(elem[mid]) < val)
 				l = mid + 1;
 			else r = mid - 1;
 		}

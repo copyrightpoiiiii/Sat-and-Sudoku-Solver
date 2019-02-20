@@ -14,6 +14,9 @@ class Cnf{
         myVector<info> clause_info;
         unsigned long literal_size;
         inline Cnf(){
+            cnf_set.clear();
+            lit_set.clear();
+            clause_info.clear();
             literal_size=0;
         }
         inline void init(){
@@ -26,5 +29,11 @@ class Cnf{
                 clause_info[i].size=clause_info[i].l2=cnf_set[i].size();
                 clause_info[i].l1=0;
             }
+        }
+        inline void clear(){
+            cnf_set.clear();
+            lit_set.clear();
+            clause_info.clear();
+            literal_size=0;
         }
 };

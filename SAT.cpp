@@ -45,6 +45,47 @@ bool solve(){
     }
 }
 
+pair<int,int> find_mini_clause(){
+    pair<int,int> info;
+    info.first=inf;info.second=-1;
+    for(int i=0;i<clauses.cnf_set.size();i++)
+        if(clauses.clause_info[i].exist){
+            if(clauses.clause_info[i].size<info.first)
+                info=make_pair(clauses.clause_info[i].size,i);
+        }
+    return info;
+}
+
+bool origin_dpll(){
+    while(1){
+        pair<int,int> min_clause=find_mini_clause();
+        if(min_clause.second==-1)return true;
+        else if(min_clause.first==0)return false;
+        else if(min_clause.second==1&&(!dpll_status)){
+            //clauses.lit_set[abs(clauses.cnf_set[min_clause.second][0])]=(clauses.cnf_set[min_clause.second][0]>0);
+            //clauses.[min_clause.second].
+            int lit_id=clauses.clause_info[min_clause.second].l1;
+            int choose_lit=clauses.cnf_set[min_clause.second][lit_id];
+            clauses.lit_set[abs(choose_lit)]=choose_lit>0;
+            clauses.clause_info[min_clause.second]=(info){false,0,lit_id,lit_id};
+            for(int i=0;i<clauses.cnf_set.size();i++)
+                if(clauses.clause_info[i].exist){
+                    clauses.clause_info[i].size--;
+                    int left=clauses.clause_info[i].l1,right=clauses.clause_info[i].l2;
+                    while(left<=right){
+                        while(clauses.lit_set[abs(clauses.cnf_set[i][left])]!=UNDEFINE)left++;
+                        while(clauses.lit_set[abs(clauses.cnf_set[i][right])]!=UNDEFINE)right--;
+                    }
+                    clauses.clause_info[i].l1=left;
+                    clauses.clause_info[i].l2=right;
+                    if(left>right)
+                        clauses.clause_info[i].exist=false;
+                }
+        }
+    }
+    
+}
+
 void init(){
     int n=readint(),m=readint();
     clauses.literal_size=n;
