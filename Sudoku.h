@@ -5,7 +5,7 @@
 
 #endif
 
-#include"Cnf.hpp"
+#include"data_structure/Cnf.hpp"
 
 #define binary_conversion(x, y, z) ((x*9*9)+(y*9)+z)
 

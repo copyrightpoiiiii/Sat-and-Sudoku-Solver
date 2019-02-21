@@ -2,7 +2,8 @@
 #define  SAT
 #include"SAT.h"
 #endif
-#include"origin_dpll.h"
+#include"naive_dpll/origin_dpll.h"
+#include"solve/solve.h"
 
 int readint(){
     int x=0,f=1;char ch=getchar();
