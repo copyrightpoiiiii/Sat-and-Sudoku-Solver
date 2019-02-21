@@ -90,6 +90,10 @@ public:
 		return elem;
 	}
 
+    myVector &end () {
+        return elem+size;
+    }
+
 	inline unsigned long size () {
 		return num;
 	}

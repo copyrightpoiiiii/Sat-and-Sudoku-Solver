@@ -8,16 +8,23 @@ struct info{
 class Cnf{
     private:
         typedef myVector<int> clause;
+        typedef myVector<int> rec_lit_in_clause;
     public:
         myVector<clause> cnf_set;
         myVector<int> lit_set;
         myVector<info> clause_info;
+        myVector<rec_lit_in_clause> rec_pos_lit;
+        myVector<rec_lit_in_clause> rec_neg_lit;
         unsigned long literal_size;
+        unsigned long clause_size;
         inline Cnf(){
             cnf_set.clear();
             lit_set.clear();
             clause_info.clear();
+            rec_pos_lit.clear();
+            rec_neg_lit.clear();
             literal_size=0;
+            clause_size=0;
         }
         inline void init(){
             lit_set.capacity(literal_size);
@@ -33,7 +40,13 @@ class Cnf{
         inline void clear(){
             cnf_set.clear();
             lit_set.clear();
+            rec_pos_lit.clear();
+            rec_neg_lit.clear();
             clause_info.clear();
             literal_size=0;
+            clause_size=0;
+        }
+        bool empty(){
+            return clause_size==0;
         }
 };
