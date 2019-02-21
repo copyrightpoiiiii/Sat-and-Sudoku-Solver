@@ -217,7 +217,9 @@ inline void Sudoku::enum_grid () {
 		}
 }
 
-enum_row ();
+void Sudoku::transform () {
+	enum_row ();
+    enum_row ();
 	enum_col ();
 	enum_grid ();
 	for (int row = 0; row < 9; row++)
