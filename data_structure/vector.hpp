@@ -91,7 +91,7 @@ public:
 	}
 
     myVector &end () {
-        return elem+size;
+        return elem+num;
     }
 
 	inline unsigned long size () {
