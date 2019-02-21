@@ -16,13 +16,6 @@ priority_queue<pair<int,int> > q;
 int dpll_status;
 
 
-int readint(){
-    int x=0,f=1;char ch=getchar();
-    while(ch<'0'||ch>'9'){if(ch=='-')f=-1;ch=getchar();}
-    while(ch>='0'&&ch<='9'){x=10*x+ch-'0';ch=getchar();}
-    return x*f;
-}
+int readint() ;
 
-bool solve();
-
-void init();
+void init() ;

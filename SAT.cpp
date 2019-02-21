@@ -2,7 +2,36 @@
 #define  SAT
 #include"SAT.h"
 #endif
-#include"origin_dpll.hpp"
+#include"origin_dpll.h"
+
+int readint(){
+    int x=0,f=1;char ch=getchar();
+    while(ch<'0'||ch>'9'){if(ch=='-')f=-1;ch=getchar();}
+    while(ch>='0'&&ch<='9'){x=10*x+ch-'0';ch=getchar();}
+    return x*f;
+}
+
+void init () {
+	int n = readint (), m = readint ();
+	clauses.literal_size = n;
+	clauses.clause_size = m;
+	clauses.rec_pos_lit.capacity (n);
+	clauses.rec_neg_lit.capacity (n);
+	for (int i = 0; i < m; i++) {
+		myVector<int> new_clause;
+		new_clause.clear ();
+		int x = readint ();
+		while (x) {
+			new_clause.push_back (x);
+			if (x > 0)clauses.rec_pos_lit[x].push_back (i);
+			else clauses.rec_neg_lit[-x].push_back (i);
+			x = readint ();
+		}
+		new_clause.qsort (0, new_clause.size ());
+		clauses.cnf_set.push_back (new_clause);
+	}
+	clauses.init ();
+}
 
 int main () {
 	int op = 1;
@@ -35,36 +64,4 @@ int main () {
 	} //end of while
 	printf ("即将退出系统！\n");
 	return 0;
-}
-
-bool solve () {
-	for (int i = 0; i < clauses.cnf_set.size (); i++)
-		q.push (make_pair ((int) clauses.cnf_set[i].size (), i));
-	while (!q.empty ()) {
-		for (pair<int, int> i = q.top (); clauses.clause_info[i.first].size != i.second; q.pop ());
-		pair<int, int> cho_cla = q.top ();
-		q.pop ();
-	}
-}
-
-void init () {
-	int n = readint (), m = readint ();
-	clauses.literal_size = n;
-	clauses.clause_size = m;
-	clauses.rec_pos_lit.capacity (n);
-	clauses.rec_neg_lit.capacity (n);
-	for (int i = 0; i < m; i++) {
-		myVector<int> new_clause;
-		new_clause.clear ();
-		int x = readint ();
-		while (x) {
-			new_clause.push_back (x);
-			if (x > 0)clauses.rec_pos_lit[x].push_back (i);
-			else clauses.rec_neg_lit[-x].push_back (i);
-			x = readint ();
-		}
-		new_clause.qsort (0, new_clause.size ());
-		clauses.cnf_set.push_back (new_clause);
-	}
-	clauses.init ();
 }
