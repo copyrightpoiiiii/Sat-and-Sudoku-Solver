@@ -1,9 +1,0 @@
-{
-    "files.associations": {
-        "cstdlib": "cpp",
-        "__split_buffer": "cpp",
-        "memory": "cpp",
-        "typeinfo": "cpp",
-        "vector": "cpp"
-    }
-}
