@@ -98,5 +98,33 @@ class GClause{
 };
 
 class Solver{
-
+    bool ok;
+    myVector<Clause*> clauses;
+    myVector<Clause*> learnts;
+    int n_bin_clauses;
+    double cla_inc;
+    double cla_decay;
+    myVector<double> activity;
+    double var_inc;
+    double var_decay;
+    VarOrder order;
+    myVector<myVector<GClause> > watches;
+    myVector<short> assigns;
+    myVector<Lit> trail;
+    myVector<int> trail_lim;
+    myVector<GClause> reason;
+    myVector<int> level;
+    int root_level,qhead;
+    int simpDB_props,simpDB_assigns;
+    myVector<short> analyze_seen;
+    myVector<Lit> analyze_stack;
+    myVector<Lit> analyze_toclear;
+    Clause* propagate_tmpbin;
+    Clause* analyze_tmpbin;
+    Clause* solve_tmpunit;
+    myVector<Lit> addBinary_tmp;
+    myVector<Lit> addTernary_tmp;
+    bool assume(Lit p);
+    void cancelUntil(int level);
+    void record(myVector<Lit>& clause);
 };
