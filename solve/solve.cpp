@@ -23,3 +23,16 @@ int VarOrder::select(){
     }
     return -1;
 }
+
+inline Clause* Clause_new(myVector<Lit>& ps,bool learnt){
+    void* mem=(char *)malloc(sizeof(Clause)-sizeof(Lit)+sizeof(unsigned long)*(ps.size())+(int)learnt);
+}
+
+inline GClause GClause_new(Lit p){
+    return GClause((void*)(((int)p.x<<1)+1));
+}
+
+inline GClause GClause_new(Clause* c){
+    return GClause((void*)c);
+}
+

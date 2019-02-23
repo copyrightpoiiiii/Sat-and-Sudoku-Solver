@@ -85,13 +85,17 @@ class Clause{
         }
 };
 
-inline Clause* Clause_new(myVector<Lit>& ps,bool learnt){
-    void* mem=(char *)malloc(sizeof(Clause)-sizeof(Lit)+sizeof(unsigned long)*(ps.size())+(int)learnt);
-}
-
 class GClause{
-    
-}
+    private:     
+        void* data;
+        GClause(void* d): data(d){}
+    public: 
+        friend GClause GClause_new(Lit p);
+        friend GClause GClause_new(Clause* c);
+        Clause* clause()const{
+            return (Clause*)data;
+        }
+};
 
 class Solver{
 
