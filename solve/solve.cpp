@@ -1,11 +1,25 @@
 #include"solve.h"
 
-bool solve () {
-	for (int i = 0; i < clauses.cnf_set.size (); i++)
-		q.push (make_pair ((int) clauses.cnf_set[i].size (), i));
-	while (!q.empty ()) {
-		for (pair<int, int> i = q.top (); clauses.clause_info[i.first].size != i.second; q.pop ());
-		pair<int, int> cho_cla = q.top ();
-		q.pop ();
-	}
+void VarOrder::newVar(){
+    h.setBounds(ref_to_assigns.size());
+    h.insert(ref_to_assigns.size()-1);
+}
+
+void VarOrder::update(int x){
+    if(!h.inHeap(x))return;
+    else h.increase(x);
+}
+
+void VarOrder::undo(int x){
+    if(h.inHeap(x))return;
+    else h.insert(x);
+}
+
+int VarOrder::select(){
+    while(!h.empty()){
+        int top=h.getmin();
+        if(!ref_to_assigns[top])
+            return top;
+    }
+    return -1;
 }
