@@ -4,12 +4,20 @@
 #endif
 #include"../data_structure/heap.hpp"
 
+
 struct var_info{
     myVector<double>& active;
     bool operator () (int x,int y){
         return active[y] < active[x];
     }
     var_info(myVector<double>& x):active(x){}
+};
+
+struct solve_state{
+    long long   starts, decisions, propagations, conflicts;
+    long long   clauses_literals, learnts_literals, max_literals, tot_literals;
+    solve_state() : starts(0), decisions(0), propagations(0), conflicts(0)
+      , clauses_literals(0), learnts_literals(0), max_literals(0), tot_literals(0) { }
 };
 
 struct sear_stat{
@@ -104,6 +112,12 @@ class GClause{
         Clause* clause()const{
             return (Clause*)data;
         }
+        bool operator == (GClause c){ 
+            return data == c.data; 
+        }
+        bool operator != (GClause c){
+             return data != c.data; 
+        }
 };
 
 
@@ -163,9 +177,7 @@ class Solver{
         void     claDecayActivity  () { cla_inc *= cla_decay; }
         void     claRescaleActivity();
 
-        // Operations on clauses:
-        //
-        void     newClause(const myVector<Lit>& ps, bool learnt = false);
+        void     newClause(myVector<Lit>& ps, bool learnt = false);
         void     claBumpActivity (Clause* c) {
             int tmp=c->size();
             c->data[tmp].x += cla_inc;
@@ -174,14 +186,14 @@ class Solver{
         }
         void     remove(Clause* c, bool just_dealloc = false);
         bool     locked(const Clause* c){
-            int tmp=(((*c)[0]).x>>1);
+            int tmp=(var((*c)[0]));
             if(((*(int *)reason[tmp].data)&1)==1)
                 return false;
             else if(reason[tmp].clause()==c)
                 return true;
             else return false;
         }
-        bool     simplify        (Clause* c) const;
+        bool     simplify(Clause* c);
 
         int      decisionLevel(){ return trail_lim.size(); }
 
@@ -219,21 +231,12 @@ class Solver{
         int value(Lit p){ return sign(p) ? ~(2*assigns[var(p)]-1) :(2*assigns[var(p)]-1); }
 
         int     nAssigns() { return trail.size(); }
-        int     nClauses() { return clauses.size() + n_bin_clauses; }   // (minor difference from MiniSat without the GClause trick: learnt binary clauses will be counted as original clauses)
+        int     nClauses() { return clauses.size() + n_bin_clauses; }   
         int     nLearnts() { return learnts.size(); }
-
-        // Statistics: (read-only member variable)
-        //
-        int    stats;
-
-        // Mode of operation:
-        //
-        sear_stat default_params;     // Restart frequency etc.
-        bool            expensive_ccmin;    // Controls conflict clause minimization. TRUE by default.
-        int             verbosity;          // Verbosity level. 0=silent, 1=some progress report, 2=everything
-
-        // Problem specification:
-        //
+        solve_state    stats;
+        sear_stat default_params;    
+        bool            expensive_ccmin;    
+        int             verbosity;          
         int     newVar();
         int     nVars(){
                     return assigns.size(); 
@@ -243,16 +246,14 @@ class Solver{
                 }
         void    addBinary (Lit p, Lit q)        { addBinary_tmp [0] = p; addBinary_tmp [1] = q; addClause(addBinary_tmp); }
         void    addTernary(Lit p, Lit q, Lit r) { addTernary_tmp[0] = p; addTernary_tmp[1] = q; addTernary_tmp[2] = r; addClause(addTernary_tmp); }
-        void    addClause (myVector<Lit>& ps)  { newClause(ps); }  // (used to be a difference between internal and external method...)
+        void    addClause (myVector<Lit>& ps)  { newClause(ps); }  
 
-        // Solving:
-        //
-        bool    okay() { return ok; }       // FALSE means solver is in an conflicting state (must never be used again!)
+        bool    okay() { return ok; }      
         void    simplifyDB();
         bool    solve(myVector<Lit>& assumps);
         bool    solve() {myVector<Lit> tmp; return solve(tmp); }
 
-        double      progress_estimate;  // Set by 'search()'.
-        myVector<bool>  model;              // If problem is satisfiable, this vector contains the model (if any).
+        double      progress_estimate;  
+        myVector<bool>  model;              
         myVector<Lit>    conflict;
 };
