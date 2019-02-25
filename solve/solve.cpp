@@ -36,3 +36,7 @@ inline GClause GClause_new(Clause* c){
     return GClause((void*)c);
 }
 
+bool removeWatch(myVector<GClause>& ws,GClause elem){
+    
+}
+
