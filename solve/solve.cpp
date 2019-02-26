@@ -557,7 +557,7 @@ void Solver::claRescaleActivity(){
     cla_inc*=1e-20;
 }
 
-bool Solver::solve(myVector<Lit>& assumps){
+bool Solver::solve(const myVector<Lit>& assumps){
     simplifyDB();
     if(!ok)return false;
     sear_stat params(default_params);

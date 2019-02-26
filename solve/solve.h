@@ -128,7 +128,7 @@ inline GClause GClause_new(Lit p);
 inline GClause GClause_new(Clause* c);
 
 class Solver{
-    private:
+    protected:
         bool ok;
         myVector<Clause*> clauses;
         myVector<Clause*> learnts;
@@ -254,10 +254,11 @@ class Solver{
 
         bool    okay() { return ok; }      
         void    simplifyDB();
-        bool    solve(myVector<Lit>& assumps);
+        bool    solve(const myVector<Lit>& assumps);
         bool    solve() {myVector<Lit> tmp; return solve(tmp); }
 
         double      progress_estimate;  
         myVector<bool>  model;              
         myVector<Lit>    conflict;
+        myVector<Lit> input;
 };
