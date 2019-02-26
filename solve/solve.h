@@ -1,8 +1,10 @@
-#ifndef SAT
-#define  SAT
-#include"../SAT.h"
-#endif
 #include"../data_structure/heap.hpp"
+#include"../data_structure/vector.hpp"
+#include"../data_structure/sort.hpp"
+#ifndef GENERAL
+#define GENERAL
+#include"General.hpp"
+#endif
 
 
 struct var_info{
@@ -33,8 +35,8 @@ class Lit{
     public:
         int x;
         Lit(){x=-2;}
-        Lit(int var,bool sign){
-            x=(var<<1)+(int)sign;
+       explicit Lit(int var,bool sign=false){
+            x=(var+var)+(int)sign;
         }
         friend inline Lit operator ~(Lit a){
             a.x^=1;
@@ -156,7 +158,7 @@ class Solver{
 
         bool assume(Lit p);
         void cancelUntil(int level);
-        void record(myVector<Lit>& clause);
+        void record(const myVector<Lit>& clause);
         void analyze(Clause* confl,myVector<Lit>& out_learnt,int& out_btlevel);
         bool analyze_removable(Lit p,unsigned long min_level);
         void analyzeFinal(Clause* confl,bool skip_first);
@@ -164,7 +166,7 @@ class Solver{
         Clause* propagate();
         void        reduceDB         ();
         Lit         pickBranchLit    (const sear_stat& params);
-        int       search           (int nof_conflicts, int nof_learnts, const sear_stat& params);
+        int       search           (int nof_conflicts, int nof_learnts,const sear_stat& params);
         double      progressEstimate ();
 
         void varBumpActivity(Lit p) {
@@ -177,7 +179,7 @@ class Solver{
         void     claDecayActivity  () { cla_inc *= cla_decay; }
         void     claRescaleActivity();
 
-        void     newClause(myVector<Lit>& ps, bool learnt = false);
+        void     newClause(const myVector<Lit>& ps, bool learnt = false);
         void     claBumpActivity (Clause* c) {
             int tmp=c->size();
             c->data[tmp].x += cla_inc;
@@ -185,7 +187,7 @@ class Solver{
                 claRescaleActivity(); 
         }
         void     remove(Clause* c, bool just_dealloc = false);
-        bool     locked(const Clause* c){
+        bool     locked(const Clause* c)const{
             int tmp=(var((*c)[0]));
             if(((*(int *)reason[tmp].data)&1)==1)
                 return false;
@@ -193,9 +195,9 @@ class Solver{
                 return true;
             else return false;
         }
-        bool     simplify(Clause* c);
+        bool     simplify(Clause* c)const;
 
-        int      decisionLevel(){ return trail_lim.size(); }
+        int      decisionLevel()const{ return trail_lim.size(); }
 
     public:
         Solver() : ok               (true)
@@ -213,7 +215,9 @@ class Solver{
                 , verbosity        (0)
                 , progress_estimate(0)
                 {
-                    myVector<Lit> dummy(2,lit_Undef);
+                    myVector<Lit> dummy;
+                    dummy.clear();
+                    dummy.capacity(2*sizeof(Lit));
                     propagate_tmpbin = Clause_new(dummy,false);
                     analyze_tmpbin   = Clause_new(dummy,false);
                     dummy.pop_back();
@@ -225,10 +229,10 @@ class Solver{
     ~Solver() {
         for (int i = 0; i < learnts.size(); i++) remove(learnts[i], true);
         for (int i = 0; i < clauses.size(); i++) if (clauses[i] != NULL) remove(clauses[i], true); }
-        int value(int x){
+        int value(int x)const{
             return 2*assigns[x]-1; 
         }
-        int value(Lit p){ return sign(p) ? ~(2*assigns[var(p)]-1) :(2*assigns[var(p)]-1); }
+        int value(Lit p)const{ return sign(p) ? ~(2*assigns[var(p)]-1) :(2*assigns[var(p)]-1); }
 
         int     nAssigns() { return trail.size(); }
         int     nClauses() { return clauses.size() + n_bin_clauses; }   
@@ -246,7 +250,7 @@ class Solver{
                 }
         void    addBinary (Lit p, Lit q)        { addBinary_tmp [0] = p; addBinary_tmp [1] = q; addClause(addBinary_tmp); }
         void    addTernary(Lit p, Lit q, Lit r) { addTernary_tmp[0] = p; addTernary_tmp[1] = q; addTernary_tmp[2] = r; addClause(addTernary_tmp); }
-        void    addClause (myVector<Lit>& ps)  { newClause(ps); }  
+        void    addClause (const myVector<Lit>& ps)  { newClause(ps); }  
 
         bool    okay() { return ok; }      
         void    simplifyDB();
