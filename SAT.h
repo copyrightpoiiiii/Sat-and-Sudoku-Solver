@@ -4,6 +4,7 @@
 #include"data_structure/queue.hpp"
 #include"data_structure/heap.hpp"
 #include"data_structure/sort.hpp"
+#include"solve/solve.h"
 #ifndef GENERAL
 #define GENERAL
 #include"General.hpp"
@@ -12,8 +13,9 @@
 #define inf 1e9
 
 Cnf clauses;
-priority_queue<pair<int,int> > q;
+//<pair<int,int> > q;
 int dpll_status;
+Solver S;
 
 
 int readint() ;

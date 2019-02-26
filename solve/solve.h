@@ -250,7 +250,7 @@ class Solver{
                 }
         void    addBinary (Lit p, Lit q)        { addBinary_tmp [0] = p; addBinary_tmp [1] = q; addClause(addBinary_tmp); }
         void    addTernary(Lit p, Lit q, Lit r) { addTernary_tmp[0] = p; addTernary_tmp[1] = q; addTernary_tmp[2] = r; addClause(addTernary_tmp); }
-        void    addClause (const myVector<Lit>& ps)  { newClause(ps); }  
+        void    addClause (myVector<Lit> ps){ newClause(ps); }  
 
         bool    okay() { return ok; }      
         void    simplifyDB();

@@ -18,20 +18,32 @@ void init () {
 	clauses.clause_size = m;
 	clauses.rec_pos_lit.capacity (n);
 	clauses.rec_neg_lit.capacity (n);
+    myVector<Lit> sat_clause;
 	for (int i = 0; i < m; i++) {
 		myVector<int> new_clause;
+        sat_clause.clear();
 		new_clause.clear ();
 		int x = readint ();
+        Lit tmp;
 		while (x) {
 			new_clause.push_back (x);
 			if (x > 0)clauses.rec_pos_lit[x].push_back (i);
 			else clauses.rec_neg_lit[-x].push_back (i);
+            tmp.x=x;
+            sat_clause.push_back(tmp);
+            S.input.push_back(tmp);
 			x = readint ();
 		}
 		new_clause.qsort (0, new_clause.size ());
 		clauses.cnf_set.push_back (new_clause);
+        
+        S.addClause(sat_clause);
 	}
 	clauses.init ();
+}
+
+void solve_by_minisat(){
+
 }
 
 int main () {
@@ -53,6 +65,8 @@ int main () {
 			case 2: //Sat求解器
 
 				break;
+            case 3://MiniSat
+
 			case 0: //退出
 				break;
 			default: //如果输入了非法的操作编号
