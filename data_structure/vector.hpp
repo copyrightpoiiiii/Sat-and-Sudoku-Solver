@@ -1,17 +1,13 @@
 #pragma once
-#ifndef GENERAL
-#define GENERAL
-
-#include"../General.hpp"
-
-#endif
-
-#include"sort.hpp"
+#include<stdint.h>
+#include<cstdlib>
+#include<string.h>
+#include <new>
 
 template<typename T>
 class myVector {
 private:
-	T *elem;
+	T* elem;
 	unsigned long Listsize, num;
 
 	void inc_capacity () {
@@ -45,17 +41,15 @@ public:
     }
     myVector(T* array, int size)     : elem(array), num(size), Listsize(size) { } 
 
-	T &operator[] (const unsigned long x){
+	const T &operator[] (unsigned long x)const{
         return elem[x];
     }
+
+    T& operator [] (unsigned long x){return elem[x];}
 
     operator T*       (void)           { return elem; }
 
     operator const T* (void) const     { return elem; }
-
-    const  T &operator[] (const unsigned long x)const{
-        return elem[x];
-    }
 
 	void push_back (const T new_elem) {
 		if (num == Listsize)
