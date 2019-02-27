@@ -1,12 +1,10 @@
+#pragma once
 #ifndef GENERAL
 #define GENERAL
 
 #include"General.hpp"
 
 #endif
-
-#include"data_structure/Cnf.hpp"
-
 #define binary_conversion(x, y, z) ((x*9*9)+(y*9)+z)
 
 #define OK 1
@@ -14,6 +12,7 @@
 #define INFEASTABLE -1
 #define OVERFLOW -2
 typedef int status;            //状态返回值
+
 class Sudoku {
 private:
 	myVector<int> rec[9][9];

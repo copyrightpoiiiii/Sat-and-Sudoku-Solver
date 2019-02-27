@@ -1,6 +1,10 @@
 #include"solve.h"
 #include<math.h>
 
+int max(int x,int y){
+    return (x > y) ? x : y;
+}
+
 void VarOrder::newVar(){
     h.setBounds(ref_to_assigns.size());
     h.insert(ref_to_assigns.size()-1);
@@ -23,18 +27,6 @@ int VarOrder::select(){
             return top;
     }
     return -1;
-}
-
-inline Clause* Clause_new(const myVector<Lit>& ps,bool learnt){
-    void* mem=(char *)malloc(sizeof(Clause)-sizeof(Lit)+sizeof(unsigned long)*(ps.size())+(int)learnt);
-}
-
-inline GClause GClause_new(Lit p){
-    return GClause((void*)(((int)p.x<<1)+1));
-}
-
-inline GClause GClause_new(Clause* c){
-    return GClause((void*)c);
 }
 
 bool removeWatch(myVector<GClause>& ws,GClause elem){

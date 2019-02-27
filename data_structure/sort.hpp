@@ -1,9 +1,10 @@
-#ifndef GENERAL
-#define GENERAL
+#pragma once
+//#ifndef GENERAL
+//#define GENERAL
 
 #include"../General.hpp"
 
-#endif
+//#endif
 
 template<class T>
 struct LessThan_default {

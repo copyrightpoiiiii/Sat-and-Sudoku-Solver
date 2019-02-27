@@ -137,7 +137,8 @@ status Sudoku::init_SudokuMap (int hint_num) {//初始化数独地图
 		clear ();
 		return ERROR;
 	} else {//挖空
-		int blank_num = 81 - max (17, hint_num);
+    int tmp=17>hint_num?17:hint_num;
+		int blank_num = 81 - tmp;
 		note_size = hint_num;
 		while (blank_num--) {
 			int row = rand () % 9, col = rand () % 9;

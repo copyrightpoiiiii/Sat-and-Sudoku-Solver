@@ -1,11 +1,8 @@
-#include"../data_structure/heap.hpp"
-#include"../data_structure/vector.hpp"
-#include"../data_structure/sort.hpp"
+#pragma once
 #ifndef GENERAL
 #define GENERAL
-#include"General.hpp"
+#include"../General.hpp"
 #endif
-
 
 struct var_info{
     myVector<double>& active;
@@ -38,27 +35,27 @@ class Lit{
        explicit Lit(int var,bool sign=false){
             x=(var+var)+(int)sign;
         }
-        friend inline Lit operator ~(Lit a){
+        friend  Lit operator ~(Lit a){
             a.x^=1;
             return a;
         }
-        friend inline bool operator ==(Lit a,Lit b){
+        friend   bool operator ==(Lit a,Lit b){
             return a.x==b.x;
         }
-        friend inline bool operator <(Lit a,Lit b){
+        friend   bool operator <(Lit a,Lit b){
             return a.x<b.x;
         }
-        friend inline bool sign(Lit a){
+        friend   bool sign(Lit a){
             return a.x&1;
         }
-        friend inline int var(Lit a){
+        friend   int var(Lit a){
             return a.x>>1;
         }
-        friend inline Lit unsign(Lit a){ 
+        friend   Lit unsign(Lit a){ 
             a.x = a.x & ~1; 
             return a; 
         }
-        friend inline Lit id(Lit a, bool sign){ 
+        friend   Lit id(Lit a, bool sign){ 
             a.x = a.x ^ (int)sign; 
             return a; 
         }
@@ -72,11 +69,11 @@ class VarOrder{
     public:
         VarOrder(myVector<short>& value,myVector<double>& activity):
             ref_to_activity(activity),ref_to_assigns(value),h(var_info(activity)){}
-        inline void newVar();
-        inline void update(int x);
+          void newVar();
+          void update(int x);
         //void updateAll();
-        inline void undo(int x);
-        inline int select();
+          void undo(int x);
+          int select();
 };
 
 
@@ -85,7 +82,7 @@ class Clause{
     public: 
         Lit data[1];
         unsigned long learned_clause_size;
-        Clause(myVector<Lit>& ps,int learn){
+        Clause(const myVector<Lit>& ps,bool learn){
             for(int i=0;i<ps.size();i++)
                 data[i]=ps[i];
             learned_clause_size=learn|(ps.size()<<1);
@@ -93,8 +90,8 @@ class Clause{
                 data[(learned_clause_size>>1)].x=0;
         }
         friend Clause* Clause_new(myVector<Lit>& ps,bool learnt);
-        int size();
-        bool learnt();
+        int size()const{return learned_clause_size>>1;}
+        bool learnt()const{return learned_clause_size&1;}
         Lit operator [](int i)const{
             return data[i];
         }
@@ -102,8 +99,10 @@ class Clause{
             return data[i];
         }
 };
-
-inline Clause* Clause_new(myVector<Lit>& ps,bool learnt);
+inline Clause* Clause_new(const myVector<Lit>& ps,bool learnt){
+    void* mem=(char *)malloc(sizeof(Clause)-sizeof(Lit)+sizeof(unsigned long)*(ps.size())+(int)learnt);
+    return new (mem) Clause(ps,learnt);
+}
 
 class GClause{
     public: 
@@ -122,10 +121,13 @@ class GClause{
         }
 };
 
+inline GClause GClause_new(Lit p){
+    return GClause((void*)(((int)p.x<<1)+1));
+}
 
-inline GClause GClause_new(Lit p);
-
-inline GClause GClause_new(Clause* c);
+inline GClause GClause_new(Clause* c){
+    return GClause((void*)c);
+}
 
 class Solver{
     protected:
@@ -250,7 +252,7 @@ class Solver{
                 }
         void    addBinary (Lit p, Lit q)        { addBinary_tmp [0] = p; addBinary_tmp [1] = q; addClause(addBinary_tmp); }
         void    addTernary(Lit p, Lit q, Lit r) { addTernary_tmp[0] = p; addTernary_tmp[1] = q; addTernary_tmp[2] = r; addClause(addTernary_tmp); }
-        void    addClause (myVector<Lit> ps){ newClause(ps); }  
+        void    addClause (const myVector<Lit>& ps){ newClause(ps); }  
 
         bool    okay() { return ok; }      
         void    simplifyDB();
