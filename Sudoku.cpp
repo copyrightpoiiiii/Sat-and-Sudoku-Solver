@@ -1,6 +1,6 @@
 #include"Sudoku.h"
 
-inline void Sudoku::random_shuffle (int *shuffle) {//生成一个9个数的随机乱排
+void Sudoku::random_shuffle (int *shuffle) {//生成一个9个数的随机乱排
 	for (int i = 0; i < 9; i++)
 		shuffle[i] = i + 1;
 	for (int i = 0; i < 9; i++) {
@@ -9,23 +9,23 @@ inline void Sudoku::random_shuffle (int *shuffle) {//生成一个9个数的随�
 	}
 }
 
-inline void Sudoku::swap_row (int x, int y) {
+void Sudoku::swap_row (int x, int y) {
 	for (int i = 0; i < 9; i++)
 		swap (mp[x][i], mp[y][i]);
 }
 
-inline void Sudoku::swap_col (int x, int y) {
+void Sudoku::swap_col (int x, int y) {
 	for (int i = 0; i < 9; i++)
 		swap (mp[i][x], mp[i][y]);
 }
 
-inline void Sudoku::trans () {
+void Sudoku::trans () {
 	for (int i = 0; i < 9; i++)
 		for (int j = i; j < 9; j++)
 			swap (mp[i][j], mp[j][i]);
 }
 
-inline bool Sudoku::check () {
+bool Sudoku::check () {
 	//逐行检查
 	for (int row = 0; row < 9; row++) {
 		clear_num_rec ();
@@ -58,13 +58,13 @@ inline bool Sudoku::check () {
 	return true;
 }
 
-inline void Sudoku::clear () {//清空操作
+void Sudoku::clear () {//清空操作
 	for (int i = 0; i < 9; i++)
 		for (int j = 0; j < 9; j++)
 			mp[i][j] = 0;
 }
 
-inline void Sudoku::clear_num_rec () {//清空book数组
+void Sudoku::clear_num_rec () {//清空book数组
 	for (int i = 1; i <= 9; i++)
 		book[i] = 0;
 }
@@ -137,7 +137,7 @@ status Sudoku::init_SudokuMap (int hint_num) {//初始化数独地图
 		clear ();
 		return ERROR;
 	} else {//挖空
-    int tmp=17>hint_num?17:hint_num;
+		int tmp = 17 > hint_num ? 17 : hint_num;
 		int blank_num = 81 - tmp;
 		note_size = hint_num;
 		while (blank_num--) {
@@ -152,11 +152,11 @@ status Sudoku::init_SudokuMap (int hint_num) {//初始化数独地图
 	}
 }
 
-inline unsigned long Sudoku::hint_num () {
+unsigned long Sudoku::hint_num () {
 	return note_size;
 }
 
-inline void Sudoku::enum_row () {
+void Sudoku::enum_row () {
 	for (int row = 0; row < 9; row++) {//枚举每一行
 		clear_num_rec ();
 		for (int col = 0; col < 9; col++)
@@ -171,7 +171,7 @@ inline void Sudoku::enum_row () {
 	}
 }
 
-inline void Sudoku::enum_col () {
+void Sudoku::enum_col () {
 	for (int col = 0; col < 9; col++) {//枚举每一列，做减法
 		clear_num_rec ();
 		for (int row = 0; row < 9; row++)
@@ -193,7 +193,7 @@ inline void Sudoku::enum_col () {
 	}
 }
 
-inline void Sudoku::enum_grid () {
+void Sudoku::enum_grid () {
 	for (int st_row = 0; st_row < 9; st_row += 3)//枚举每个小方格，做减法
 		for (int st_col = 0; st_col < 9; st_col += 3) {
 			clear_num_rec ();
@@ -219,51 +219,71 @@ inline void Sudoku::enum_grid () {
 }
 
 void Sudoku::transform () {
-	enum_row ();
-    enum_row ();
-	enum_col ();
-	enum_grid ();
+	for (int i = 1; i <= 8829; i++)
+		Sudoku_trans.push_back ();
+	int tot = 0;
 	for (int row = 0; row < 9; row++)
 		for (int col = 0; col < 9; col++)
 			if (mp[row][col]) {
 				myVector<int> clause;
-				clause.clear ();
+				clause.clear (true);
 				clause.push_back (binary_conversion (row, col, mp[row][col]));
-				Sudoku_trans.cnf_set.push_back (clause);
-			} else {
-				myVector<int> clause;
-				clause.clear ();
-				for (int i = 0; i < rec[row][col].size (); i++) {
-					clause.push_back (binary_conversion (row, col, rec[row][col][i]));
-					for (int j = i + 1; j < rec[row][col].size (); j++) {
+				for (int i = 1; i <= 9; i++) {
+					for (int j = i + 1; j <= 9; j++) {
 						myVector<int> clause_lit;
-						clause_lit.clear ();
-						clause_lit.push_back (-binary_conversion (row, col, rec[row][col][i]));
-						clause_lit.push_back (-binary_conversion (row, col, rec[row][col][j]));
-						Sudoku_trans.cnf_set.push_back (clause_lit);
+						clause_lit.clear (true);
+						clause_lit.push_back (-binary_conversion (row, col, i));
+						clause_lit.push_back (-binary_conversion (row, col, j));
+						for (int k = 0; k < clause_lit.size (); k++)
+							Sudoku_trans[tot].push_back (clause_lit[k]);
+						tot++;
 					}
 				}
-				Sudoku_trans.cnf_set.push_back (clause);
+				for (int k = 0; k < clause.size (); k++)
+					Sudoku_trans[tot].push_back (clause[k]);
+				tot++;
+			} else {
+				myVector<int> clause;
+				clause.clear (true);
+				for (int i = 1; i <= 9; i++) {
+					clause.push_back (binary_conversion (row, col, i));
+					for (int j = i + 1; j <= 9; j++) {
+						myVector<int> clause_lit;
+						clause_lit.clear (true);
+						clause_lit.push_back (-binary_conversion (row, col, i));
+						clause_lit.push_back (-binary_conversion (row, col, j));
+						for (int k = 0; k < clause_lit.size (); k++)
+							Sudoku_trans[tot].push_back (clause_lit[k]);
+						tot++;
+					}
+				}
+				for (int k = 0; k < clause.size (); k++)
+					Sudoku_trans[tot].push_back (clause[k]);
+				tot++;
 			}
 	for (int row = 0; row < 9; row++)
 		for (int num = 1; num <= 9; num++)
 			for (int col = 0; col < 9; col++)
 				for (int col_eum = col + 1; col_eum < 9; col_eum++) {
 					myVector<int> clause;
-					clause.clear ();
+					clause.clear (true);
 					clause.push_back (-binary_conversion (row, col, num));
 					clause.push_back (-binary_conversion (row, col_eum, num));
-					Sudoku_trans.cnf_set.push_back (clause);
+					for (int k = 0; k < clause.size (); k++)
+						Sudoku_trans[tot].push_back (clause[k]);
+					tot++;
 				}
 	for (int col = 0; col < 9; col++)
 		for (int num = 1; num <= 9; num++)
 			for (int row = 0; row < 9; row++)
 				for (int row_eum = row + 1; row_eum < 9; row_eum++) {
 					myVector<int> clause;
-					clause.clear ();
+					clause.clear (true);
 					clause.push_back (-binary_conversion (row, col, num));
 					clause.push_back (-binary_conversion (row_eum, col, num));
-					Sudoku_trans.cnf_set.push_back (clause);
+					for (int k = 0; k < clause.size (); k++)
+						Sudoku_trans[tot].push_back (clause[k]);
+					tot++;
 				}
 	for (int num = 1; num <= 9; num++)
 		for (int st_row = 0; st_row < 9; st_row += 3)//枚举每个小方格
@@ -277,10 +297,12 @@ void Sudoku::transform () {
 						}
 						while (row_eum < 3 + st_row) {
 							myVector<int> clause;
-							clause.clear ();
+							clause.clear (true);
 							clause.push_back (-binary_conversion (row, col, num));
 							clause.push_back (-binary_conversion (row_eum, col_eum, num));
-							Sudoku_trans.cnf_set.push_back (clause);
+							for (int k = 0; k < clause.size (); k++)
+								Sudoku_trans[tot].push_back (clause[k]);
+							tot++;
 							col_eum++;
 							if (col_eum >= st_col + 3) {
 								row_eum++;
@@ -291,37 +313,76 @@ void Sudoku::transform () {
 	for (int row = 0; row < 9; row++)
 		for (int num = 1; num <= 9; num++) {
 			myVector<int> clause;
-			clause.clear ();
+			clause.clear (true);
 			for (int col = 0; col < 9; col++)
 				clause.push_back (binary_conversion (row, col, num));
-			Sudoku_trans.cnf_set.push_back (clause);
+			for (int k = 0; k < clause.size (); k++)
+				Sudoku_trans[tot].push_back (clause[k]);
+			tot++;
 		}
 	for (int col = 0; col < 9; col++)
 		for (int num = 1; num <= 9; num++) {
 			myVector<int> clause;
-			clause.clear ();
+			clause.clear (true);
 			for (int row = 0; row < 9; row++)
 				clause.push_back (binary_conversion (row, col, num));
-			Sudoku_trans.cnf_set.push_back (clause);
+			for (int k = 0; k < clause.size (); k++)
+				Sudoku_trans[tot].push_back (clause[k]);
+			tot++;
 		}
 	for (int num = 1; num <= 9; num++)
 		for (int st_row = 0; st_row < 9; st_row += 3)//枚举每个小方格
 			for (int st_col = 0; st_col < 9; st_col += 3) {
 				myVector<int> clause;
-				clause.clear ();
+				clause.clear (true);
 				for (int row = st_row; row < 3 + st_row; row++)
 					for (int col = st_col; col < 3 + st_col; col++)
 						clause.push_back (binary_conversion (row, col, num));
-				Sudoku_trans.cnf_set.push_back (clause);
+				for (int k = 0; k < clause.size (); k++)
+					Sudoku_trans[tot].push_back (clause[k]);
+				tot++;
 			}
 	int book_var[1000];
 	memset (book_var, 0, sizeof (book_var));
-	for (int i = 0; i < Sudoku_trans.cnf_set.size (); i++) {
-		for (int j = 0; j < Sudoku_trans.cnf_set[i].size (); j++)
-			book_var[Sudoku_trans.cnf_set[i][j]]++;
-		Sudoku_trans.cnf_set[i].push_back (0);
+	for (int i = 0; i < Sudoku_trans.size (); i++) {
+		for (int j = 0; j < Sudoku_trans[i].size (); j++) {
+			book_var[abs (Sudoku_trans[i][j])]++;
+		}
 	}
 	for (int i = 1; i < 1000; i++)
 		if (book_var[i])
-			Sudoku_trans.literal_size++;
+			literal_size++;
+}
+
+void Sudoku::print () {
+	for (int row = 0; row < 9; row++) {
+		for (int col = 0; col < 9; col++)
+			printf ("%d", mp[row][col]);
+		printf ("\n");
+	}
+}
+
+void Sudoku::output () {
+	FILE *fp;
+	char filename[30];
+	printf ("请输入输出的文件名: \n");
+	scanf ("%s", filename);
+	fp = fopen (filename, "w");
+	for (int row = 0; row < 9; row++) {
+		fprintf (fp, "c     ");
+		for (int col = 0; col < 9; col++)
+			if (mp[row][col])
+				fprintf (fp, "%d", mp[row][col]);
+			else fprintf (fp, ".");
+		fprintf (fp, "\n");
+	}
+	transform ();
+	fprintf (fp, "p    %d    %d\n", literal_size, Sudoku_trans.size ());
+	for (int i = 0; i < Sudoku_trans.size (); i++) {
+		fprintf (fp, "p ");
+		for (int j = 0; j < Sudoku_trans[i].size (); j++)
+			fprintf (fp, "%d ", Sudoku_trans[i][j]);
+		fprintf (fp, "0\n");
+	}
+	fclose (fp);
 }
